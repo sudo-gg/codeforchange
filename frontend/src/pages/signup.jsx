@@ -44,6 +44,7 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [stars, setStars] = useState([]);
+  const navigate = useNavigate();
 
   // Generate stars on component mount
   useEffect(() => {
