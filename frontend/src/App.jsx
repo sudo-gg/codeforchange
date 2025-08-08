@@ -19,8 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/register" element={<Placeholder pageName="Register" />} />
+        <Route path="/register" element={<SignUp />} />
         <Route path="/how-it-works" element={<Placeholder pageName="How It Works" />} />
         <Route path="/features" element={<Placeholder pageName="Features" />} />
         <Route path="/blog" element={<Placeholder pageName="Blog" />} />
