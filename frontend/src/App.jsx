@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
+import Login from './pages/login';
+import SignUp from './pages/signup';
 
 const Placeholder = ({ pageName }) => (
   <div className="d-flex align-items-center justify-content-center min-vh-100 bg-dark text-light">
@@ -16,7 +18,8 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<Placeholder pageName="Login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/register" element={<Placeholder pageName="Register" />} />
         <Route path="/how-it-works" element={<Placeholder pageName="How It Works" />} />
         <Route path="/features" element={<Placeholder pageName="Features" />} />
