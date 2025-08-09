@@ -58,19 +58,42 @@ export default function NightSkyPage({ session }) {
         return <div className="min-vh-100 bg-dark text-white d-flex justify-content-center align-items-center">Loading your universe...</div>;
     }
 
+    // --- THIS IS THE MODIFIED FUNCTION ---
+    const handleStarAppreciated = ({ appreciated }) => {
+        if (!selectedStar) return;
+
+        // Update the main list of stars
+        setStars(currentStars => 
+            currentStars.map(s => {
+                if (s.id === selectedStar.id) {
+                    // Return a new star object with the updated karma count
+                    return { ...s, karma: s.karma + (appreciated ? 1 : -1) };
+                }
+                return s;
+            })
+        );
+        
+        // Also update the selectedStar state to keep it in sync
+        setSelectedStar(prevStar => ({
+            ...prevStar,
+            karma: prevStar.karma + (appreciated ? 1 : -1)
+        }));
+    };
+
     return (
         <>
             {hasPostedToday ? (
-                // We no longer pass newStarId to simplify the logic
-                <NightSkyCanvas stars={stars} onStarClick={handleStarClick} /> // 3. Pass the click handler
+                <NightSkyCanvas stars={stars} onStarClick={handleStarClick} />
             ) : (
-                // We pass the fetchAllData function as the callback
                 <PostCreationOverlay user={session.user} onPostSuccess={fetchAllData} />
             )}
+            
             <StarPlayerModal 
                 star={selectedStar} 
                 show={isModalOpen} 
-                onHide={() => setIsModalOpen(false)} 
+                onHide={() => setIsModalOpen(false)}
+                // This prop is essential for the fix to work.
+                onStarAppreciated={handleStarAppreciated}
             />
         </>
     );

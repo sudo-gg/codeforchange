@@ -25,3 +25,41 @@ html, body, #root {
 .fade-in-out {
   animation: fadeInOut 4s infinite;
 }
+
+/* Glassmorphism style for the modal */
+.glass-modal .modal-content {
+  background: rgba(26, 26, 46, 0.75); /* Semi-transparent dark blue */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  color: white;
+}
+
+.glass-modal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-modal .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Style for the close button to be white */
+.glass-modal .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.hvr-grow {
+    display: inline-block;
+    vertical-align: middle;
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    transition-duration: 0.3s;
+    transition-property: transform;
+}
+
+.hvr-grow:hover,
+.hvr-grow:focus,
+.hvr-grow:active {
+    transform: scale(1.05);
+}
