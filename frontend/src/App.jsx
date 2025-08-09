@@ -9,7 +9,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/login';
 import SignUpPage from './pages/signup';
 import NightSkyPage from './pages/NightSkyPage';
-import DashboardPage from './pages/dashboard'; // Assuming you'll create this
+import DashboardPage from './pages/dashboard'; // Assuming you'll create this - yes :)
 
 export default function App() {
   const [session, setSession] = useState(null);

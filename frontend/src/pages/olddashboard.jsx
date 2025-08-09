@@ -1,8 +1,7 @@
-// import appnavbar from '../components/appnavbar';
 import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import { supabase } from '../supabaseClient';
-import '../dashboard.css';
+import './tempdashboard.css';
 
 export default function Dashboard() {
     const [user, setUser] = useState(null);
@@ -56,7 +55,6 @@ export default function Dashboard() {
                 setStars(data);
             }
         };
-
         fetchUserData();
         fetchStars();
     }
@@ -79,7 +77,7 @@ export default function Dashboard() {
         }
         return null;
     };
-    //console.log(user_id); why the hell can i not see this in the console?
+    // so user returned an array so access it first then a dictionary
     return (
         <div className="dashboard">
             <div className="stars-bg"></div>
@@ -93,8 +91,8 @@ export default function Dashboard() {
                 <main className="dashboard-main">
                     <div className="user-info">
                     {/* could be user?.username idk */}
-                        <h2>Welcome, {user ? user.username : '...'}</h2>
-                        <p>Karma: {user ? user.karma_score : '...'}</p>
+                        <h2>Welcome, {user ? user[0].username : '...'}</h2>
+                        <p>Karma: {user ? user[0].karma_score : '...'}</p>
                     </div>
                     <div className="calendar-container">
                         <h2>Your Audio Uploads</h2>
