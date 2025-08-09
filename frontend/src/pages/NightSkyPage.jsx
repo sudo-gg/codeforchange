@@ -2,11 +2,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
 import PostCreationOverlay from '../components/PostCreationOverlay';
 import NightSkyCanvas from '../components/NightSkyCanvas';
+import StarPlayerModal from '../components/StarPlayerModal';
 
 export default function NightSkyPage({ session }) {
     const [loading, setLoading] = useState(true);
     const [hasPostedToday, setHasPostedToday] = useState(false);
     const [stars, setStars] = useState([]);
+    const [selectedStar, setSelectedStar] = useState(null); // 2. Add state for the selected star
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleStarClick = (star) => {
+        setSelectedStar(star);
+        setIsModalOpen(true);
+    };
 
     const fetchAllData = useCallback(async () => {
         if (!session?.user) {
@@ -54,11 +62,16 @@ export default function NightSkyPage({ session }) {
         <>
             {hasPostedToday ? (
                 // We no longer pass newStarId to simplify the logic
-                <NightSkyCanvas stars={stars} onStarClick={(star) => console.log(star)} />
+                <NightSkyCanvas stars={stars} onStarClick={handleStarClick} /> // 3. Pass the click handler
             ) : (
                 // We pass the fetchAllData function as the callback
                 <PostCreationOverlay user={session.user} onPostSuccess={fetchAllData} />
             )}
+            <StarPlayerModal 
+                star={selectedStar} 
+                show={isModalOpen} 
+                onHide={() => setIsModalOpen(false)} 
+            />
         </>
     );
 }
