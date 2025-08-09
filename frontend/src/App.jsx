@@ -9,7 +9,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/login';
 import SignUpPage from './pages/signup';
 import NightSkyPage from './pages/NightSkyPage';
-// import DashboardPage from './pages/DashboardPage'; // Assuming you'll create this
+import DashboardPage from './pages/dashboard'; // Assuming you'll create this
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -44,7 +44,7 @@ export default function App() {
         <Route element={session ? <Layout /> : <Navigate to="/login" />}>
           {/* Pass the session object as a prop */}
           <Route path="/sky" element={<NightSkyPage session={session} />} />
-          { /* <Route path="/dashboard" element={<DashboardPage />} /> */ }
+          <Route path="/dashboard" element={<DashboardPage session={session} />} />
       </Route>
       </Routes>
     </Router>
