@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import { supabase } from '../supabaseClient';
 import '../dashboard.css';
-import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
     const [user, setUser] = useState(null);
@@ -19,36 +18,37 @@ export default function Dashboard() {
       console.error(error)
       return
     }
-    console.log(user);
     setUser_id(user?.id);
   }
 
   getUser()
-}, [])
+},[])
     useEffect(() => {
+        if (user_id !== null){
+
         // Fetches the user's profile information
         const fetchUserData = async () => {
 
             const { data, error } = await supabase
                 .from('users')
-                .select('user_id, username, karma_score')
+                .select('username, karma_score')
+                .eq('id', user_id);
 
             if (error) {
                 setError(error.message);
                 console.error('Error fetching user data:', error);
             } else {
                 setUser(data);
+                // user contains username and karma_score
             }
         };
 
         // Fetches the audio upload dates
         const fetchStars = async () => {
-            console.log("MERFDSFSADFDSAFD", user_id);
             const { data, error } = await supabase
                 .from('stars')
-                .select('created_at')
+                .select('created_at, karma, audio_url')
                 .eq('user_id', user_id);
-
             if (error) {
                 setError(error.message);
                 console.error('Error fetching stars:', error);
@@ -59,7 +59,10 @@ export default function Dashboard() {
 
         fetchUserData();
         fetchStars();
+    }
+    
     }, [user_id]);
+    
 
     // Formats the fetched star dates for the calendar
     const getStarDates = () => {
@@ -76,7 +79,7 @@ export default function Dashboard() {
         }
         return null;
     };
-
+    //console.log(user_id); why the hell can i not see this in the console?
     return (
         <div className="dashboard">
             <div className="stars-bg"></div>
@@ -89,8 +92,9 @@ export default function Dashboard() {
                 </header>
                 <main className="dashboard-main">
                     <div className="user-info">
+                    {/* could be user?.username idk */}
                         <h2>Welcome, {user ? user.username : '...'}</h2>
-                        <p>Karma: {user ? user.karma : '...'}</p>
+                        <p>Karma: {user ? user.karma_score : '...'}</p>
                     </div>
                     <div className="calendar-container">
                         <h2>Your Audio Uploads</h2>
@@ -103,3 +107,4 @@ export default function Dashboard() {
         </div>
     );
 }
+
