@@ -201,26 +201,32 @@ export default function Dashboard() {
   };
 
   const handleDateClick = (dayData) => {
-    // THIS IS WHAT I WANT TO DO BUT IT JUST RESETS THE AUDIO
-    //audioRef.current.src = dayData.audioData.audio_url;
-    setSelectedDate(dayData.date);
+  if (dayData && dayData.hasAudio) {
+    const newAudioUrl = dayData.audioData.audio_url;
+    const currentAudioUrl = audioRef.current?.src;
     
-    if (dayData && dayData.hasAudio) {
-      if (audioRef.current) {
-        if (audioRef.current.paused) {
-          audioRef.current.play();
-          setPlayingAudio(dayData.audioData);
-        } else {
-          audioRef.current.pause();
-          setPlayingAudio(null);
-        }
+    // Only update src if it's a different audio file
+    if (currentAudioUrl !== newAudioUrl) {
+      audioRef.current.src = newAudioUrl;
+      setSelectedDate(dayData.date);
+      audioRef.current.play();
+      setPlayingAudio(dayData.audioData);
+    } else {
+      // Same audio file
+      setSelectedDate(dayData.date);
+      if (audioRef.current.paused) {
+        audioRef.current.play();
+        setPlayingAudio(dayData.audioData);
+      } else {
+        audioRef.current.pause();
+        setPlayingAudio(null);
       }
-    if (audioRef.current) {
-        audioRef.current.onended = () => {
-          setPlayingAudio(null);
-        };
-      }
-  }};
+    }
+    audioRef.current.onended = () => {
+      setPlayingAudio(null);
+    };
+  }
+};
 
   const navigateMonth = (direction) => {
     setCurrentMonth(prev => {
