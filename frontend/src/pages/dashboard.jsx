@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import '../style.css';
 
 // Star component for animated background
 const Star = ({ x, y, size, opacity, animationDelay }) => (
@@ -61,6 +60,8 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [playingAudio, setPlayingAudio] = useState(null);
+
+  const audioRef = useRef(null);
 
   // Generate background stars
   useEffect(() => {
@@ -200,18 +201,26 @@ export default function Dashboard() {
   };
 
   const handleDateClick = (dayData) => {
+    // THIS IS WHAT I WANT TO DO BUT IT JUST RESETS THE AUDIO
+    //audioRef.current.src = dayData.audioData.audio_url;
+    setSelectedDate(dayData.date);
+    
     if (dayData && dayData.hasAudio) {
-      setSelectedDate(dayData.date);
-      // PLAY AUDIO HERE--------------------------------------
-      console.log('Playing audio for:', dayData.date, dayData.audioData);
-      setPlayingAudio(dayData.audioData);
-      
-      // Simulate audio playing
-      setTimeout(() => {
-        setPlayingAudio(null);
-      }, 3000);
-    }
-  };
+      if (audioRef.current) {
+        if (audioRef.current.paused) {
+          audioRef.current.play();
+          setPlayingAudio(dayData.audioData);
+        } else {
+          audioRef.current.pause();
+          setPlayingAudio(null);
+        }
+      }
+    if (audioRef.current) {
+        audioRef.current.onended = () => {
+          setPlayingAudio(null);
+        };
+      }
+  }};
 
   const navigateMonth = (direction) => {
     setCurrentMonth(prev => {
@@ -220,7 +229,32 @@ export default function Dashboard() {
       return newMonth;
     });
   };
+  const deleteAudio = async (audioUrl) => {
+    const filePath = audioUrl.replace(
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/audio-notes/`,
+  ''
+);
 
+const { error: deleteError } = await supabase
+  .storage
+  .from('audio-notes')
+  .remove([filePath]);
+
+if (deleteError) {
+  console.error("Error deleting audio file:", deleteError);
+} else {
+  const { error } = await supabase
+  .from('stars')
+  .delete()
+  .eq('id', starId) // for safety
+  .eq('user_id', user_id);
+
+if (error) {
+  console.error("Error deleting star:", error);
+  }
+  }
+  console.log("Audio file deleted successfully allegedly");
+};
   const days = getDaysInMonth(currentMonth);
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
@@ -355,9 +389,9 @@ export default function Dashboard() {
         </div>
         
         {/* Shooting stars */}
-        <ShootingStar delay={0} />
-        <ShootingStar delay={3} />
-        <ShootingStar delay={6} />
+        <ShootingStar delay={10} />
+        <ShootingStar delay={40} />
+        <ShootingStar delay={16} />
         
         {/* Nebula effects */}
         <div className="nebula-1"></div>
@@ -537,15 +571,28 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-galaxy btn-sm">
+                      <button 
+                        className="btn btn-galaxy btn-sm"
+                        onClick={() => {
+                          if (audioRef.current) {
+                            if (audioRef.current.paused) {
+                              audioRef.current.play();
+                            } else {
+                              audioRef.current.pause();
+                            }
+                          }
+                        }}
+                      >
                         <i className="fas fa-play me-1"></i>
                         Play
                       </button>
                       <button className="btn btn-outline-light btn-sm">
                         <i className="fas fa-download"></i>
                       </button>
-                      <button className="btn btn-outline-danger btn-sm">
-                        <i className="fas fa-trash"></i>
+                      <button className="btn btn-outline-danger btn-sm" onClick={() => deleteAudio(selectedAudio)}>
+                        <i className="fas fa-trash">
+                          Delete voice note
+                        </i>
                       </button>
                     </div>
                   </div>
@@ -553,6 +600,7 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+          <audio ref={audioRef} controls style={{ display: 'none' }} />
         </div>
       </div>
     </>

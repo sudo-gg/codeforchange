@@ -83,8 +83,7 @@ export default function AudioRecorder({ onRecordingComplete }) {
     }
   };
   
-  // The visualize() function and return JSX remain the same.
-  // Make sure they are included in your final file.
+  // The visualization function for the audio waveform
   const visualize = () => {
     if (!audioRef.current || !canvasRef.current) return;
     if (!audioContextRef.current) {

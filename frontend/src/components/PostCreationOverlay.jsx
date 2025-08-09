@@ -14,13 +14,22 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
         setAudioBlob(blob);
     };
     
+    /**
+     * Confirms the user's audio recording. If no recording is present,
+     * show an error message. If there is a recording, start the verification
+     * process, which takes a few seconds. After 2.5 seconds, move on to the
+     * tagging step.
+     */
     const handleConfirmAudio = () => {
         if (!audioBlob) {
+            // If the user hasn't recorded an audio yet, show an error message
             setError("Please record a message first.");
             return;
         }
+        // Start the verification process
         setStep('verifying');
         setError('');
+        // Move on to the tagging step after 2.5 seconds
         setTimeout(() => setStep('tagging'), 2500);
     };
 
