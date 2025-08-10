@@ -88,7 +88,6 @@ function ShootingStars() {
   React.useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() < 0.1) {
-        // 20% chance of spawning a new star
         spawnStar();
       }
     }, 1000); // check every 1 second

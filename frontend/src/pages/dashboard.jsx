@@ -1,5 +1,7 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef} from "react";
 import { supabase } from "../supabaseClient";
+import React from "react";
+
 
 // Star component for animated background
 const Star = ({ x, y, size, opacity, animationDelay }) => (
@@ -22,34 +24,83 @@ const Star = ({ x, y, size, opacity, animationDelay }) => (
 );
 
 // Shooting star component
-const ShootingStar = ({ delay }) => (
-  <div
-    style={{
-      position: "fixed",
-      left: "100vw",
-      top: `${Math.random() * 100}vh`,
-      width: "4px",
-      height: "4px",
-      backgroundColor: "white",
-      borderRadius: "50%",
-      opacity: 0.7,
-      animation: `shootingStar 3s linear infinite`,
-      animationDelay: `${delay}s`,
-      zIndex: 1,
-      pointerEvents: "none",
-    }}
-  >
+function ShootingStar({ top, width, height, duration, translateX, translateY }) {
+  return (
     <div
       style={{
-        position: "absolute",
-        width: "80px",
-        height: "2px",
-        background: "linear-gradient(to right, white, transparent)",
-        transform: "translateY(-1px)",
+        position: "fixed",
+        left: "100vw",
+        top,
+        width,
+        height,
+        backgroundColor: "white",
+        borderRadius: "50%",
+        opacity: 0.7,
+        animation: `shootingStar ${duration} linear forwards`,
+        pointerEvents: "none",
       }}
-    />
-  </div>
-);
+    >
+      <div
+        style={{
+          position: "absolute",
+          width: "80px",
+          height: "2px",
+          background: "linear-gradient(to right, white, transparent)",
+          transform: "translateY(-1px)",
+        }}
+      />
+      <style>
+        {`
+          @keyframes shootingStar {
+            0% {
+              transform: translateX(0) translateY(0);
+              opacity: 1;
+            }
+            100% {
+              transform: translateX(${translateX}) translateY(${translateY});
+              opacity: 0;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+function ShootingStars() {
+  const [stars, setStars] = React.useState([]);
+
+  const spawnStar = () => {
+    const newStar = {
+      id: Date.now(),
+      top: `${Math.random() * 100}vh`,
+      width: `${Math.random() * 100 + 50}px`,
+      height: `${Math.random() * 4 + 2}px`,
+      duration: `${Math.random() * 2 + 2}s`,
+      translateX: `${Math.random() * -150}vw`,
+      translateY: `${Math.random() * 60 - 30}vh`,
+    };
+    setStars((prevStars) => [...prevStars, newStar]);
+  };
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() < 0.1) { 
+        spawnStar();
+      }
+    }, 1000); // check every 1 second
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      {stars.map((star) => (
+        <ShootingStar key={star.id} {...star} />
+      ))}
+    </>
+  );
+
+}
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -61,7 +112,19 @@ export default function Dashboard() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [playingAudio, setPlayingAudio] = useState(null);
 
+  const clickedpfp = '../../images.jpeg';
+  const soundSrc = '../../vine-boom.mp3';
+  const [isClicked, setIsClicked] = useState(false);
+  const [opacity, setOpacity] = useState(0);
+
   const audioRef = useRef(null);
+
+  const handlepfpClick = () => {
+    setIsClicked(true);
+    const audio = new Audio(soundSrc);
+    audio.play();
+    setOpacity(1);
+  };
 
   // Generate background stars
   useEffect(() => {
@@ -430,9 +493,7 @@ export default function Dashboard() {
         </div>
 
         {/* Shooting stars */}
-        <ShootingStar delay={10} />
-        <ShootingStar delay={40} />
-        <ShootingStar delay={16} />
+        <ShootingStars delay={2} />
 
         {/* Nebula effects */}
         <div className="nebula-1"></div>
@@ -465,6 +526,12 @@ export default function Dashboard() {
                 <div className="text-center mb-4">
                   <div
                     className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    
+                    onClick={() => {
+                      setIsClicked(true);
+                      handlepfpClick();
+                    }}
+                    onMouseLeave={() => setOpacity(0)}
                     style={{
                       width: "80px",
                       height: "80px",
@@ -472,6 +539,19 @@ export default function Dashboard() {
                       boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)",
                     }}
                   >
+                    <img
+                      src={clickedpfp}
+                      alt="Profile"
+                      className={`rounded-circle border border-4 border-white ${isClicked ? "clicked" : ""
+                        }`}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                        opacity: opacity,
+                        transition: "opacity 0.3s ease",
+                      }}
+                    />
                     <i className="fas fa-user text-white fs-2"></i>
                   </div>
                   <h2 className="text-white mb-2">

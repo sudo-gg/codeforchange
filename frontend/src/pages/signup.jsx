@@ -80,7 +80,7 @@ function ShootingStars() {
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      if (Math.random() < 0.1) { // 20% chance of spawning a new star
+      if (Math.random() < 0.1) { // 10% chance of spawning a new star
         spawnStar();
       }
     }, 1000); // check every 1 second
@@ -204,6 +204,7 @@ export default function Signup() {
                   background: "linear-gradient(45deg, #2563eb, #a78bfa)",
                 }}
               >
+                
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="32"
