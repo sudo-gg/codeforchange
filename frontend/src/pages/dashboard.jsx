@@ -161,6 +161,34 @@ export default function Dashboard() {
     getUser();
   }, []);
 
+  // This hook is for real-time updates to the user data
+  useEffect(() => {
+    if (!user_id) return;
+
+    const channel = supabase
+        .channel(`user-updates:${user_id}`)
+        .on(
+        'postgres_changes',
+        {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'users',
+            filter: `id=eq.${user_id}`,
+        },
+        (payload) => {
+            // When your user record changes, update the state with the new data
+            console.log('Received user update:', payload.new);
+            setUser([payload.new]);
+        }
+        )
+        .subscribe();
+
+    // Cleanup the subscription when the component unmounts
+    return () => {
+        supabase.removeChannel(channel);
+    };
+    }, [user_id]);
+
   useEffect(() => {
     if (user_id !== null) {
       // Simulate fetching user data
@@ -206,7 +234,9 @@ export default function Dashboard() {
         const { data, error } = await supabase
           .from("stars")
           .select("created_at, karma, audio_url")
-          .eq("user_id", user_id);
+          .eq("user_id", user_id)
+          .eq("status", "approved");
+
         if (error) {
           setError(error.message);
           console.error("Error fetching stars:", error);
