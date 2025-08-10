@@ -177,6 +177,23 @@ export default function Login() {
             "radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 35%, #0f0f23 100%)",
         }}
       >
+        {/* Back Button */}
+        <Button
+          className="glass-card position-fixed text-white border-0 d-flex align-items-center"
+          style={{
+            top: "20px",
+            left: "20px",
+            zIndex: 1000,
+            padding: "8px 12px",
+            fontSize: "14px",
+          }}
+          onClick={() => navigate("/")}
+        >
+          <span style={{ marginRight: "6px" }}>←</span>
+          Back
+        </Button>
+
+
         <div className="position-absolute top-0 start-0 w-100 h-100">
           {stars.map((star) => (
             <Star key={star.id} {...star} />
