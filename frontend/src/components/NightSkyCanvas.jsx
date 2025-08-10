@@ -10,11 +10,11 @@ const GALAXY_CONFIG = {
   'Depression': { x: 250, y: 250, color: [138, 43, 226], nebulaColor: [138, 43, 226, 25] },
   'Success': { x: -400, y: 150, color: [255, 215, 0], nebulaColor: [255, 215, 0, 30] },
   'Stress': { x: 350, y: -300, color: [220, 20, 60], nebulaColor: [220, 20, 60, 25] },
-  'Loneliness': { x: 500, y: 550, color: [20, 20, 250], nebulaColor: [20, 20, 250, 30] },
-  'Anger': { x: 200, y: -150, color: [139, 40, 30], nebulaColor: [139, 40, 30, 30] },
-  'Sadness': { x: -50, y: -250, color: [100, 100, 100], nebulaColor: [100, 100, 100, 30] },
-  'Front-End Development': { x: 100, y: 100, color: [10, 200, 30], nebulaColor: [10, 200, 30, 30] },
-  'other': { x: 0, y: 0, color: [255, 255, 255], nebulaColor: [255, 255, 255, 30] }
+  'Loneliness': { x: 0, y: -400, color: [20, 20, 250], nebulaColor: [20, 20, 250, 30] },
+//   'Anger': { x: 200, y: -150, color: [139, 40, 30], nebulaColor: [139, 40, 30, 30] },
+//   'Sadness': { x: -50, y: -250, color: [100, 100, 100], nebulaColor: [100, 100, 100, 30] },
+//   'Front-End Development': { x: 100, y: 100, color: [10, 200, 30], nebulaColor: [10, 200, 30, 30] },
+//   'other': { x: 0, y: 0, color: [255, 255, 255], nebulaColor: [255, 255, 255, 30] }
 };
 const GALAXY_RADIUS = 120;
 const DEEP_SPACE_STARS_COUNT = 800;

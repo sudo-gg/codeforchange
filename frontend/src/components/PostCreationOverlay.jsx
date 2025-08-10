@@ -156,11 +156,11 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
                                 <option value="Success">Success</option>
                                 <option value="Stress">Stress</option>
                                 <option value="Loneliness">Loneliness</option>
-                                <option value="Grief">Grief</option>
+                                {/* <option value="Grief">Grief</option>
                                 <option value="Anger">Anger</option>
                                 <option value="Sadness">Sadness</option>
                                 <option value="FrontEndDevelopment">Front-End Development</option>
-                                <option value={"Other"}>Other</option>
+                                <option value={"Other"}>Other</option> */}
                             </Form.Select>
                         </Form.Group>
 
