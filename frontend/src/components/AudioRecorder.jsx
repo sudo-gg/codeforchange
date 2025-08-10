@@ -126,6 +126,22 @@ export default function AudioRecorder({ onRecordingComplete }) {
     }
   };
 
+  const handlePreviewPlayPause = () => {
+    if (!audioRef.current) return;
+
+    // Just like in the modal, we set up the visualizer first.
+    if (!audioContextRef.current) {
+      visualize();
+    }
+
+    if (audioRef.current.paused) {
+      audioContextRef.current?.resume();
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+    }
+  };
+
   return (
     <div className="text-center p-3">
       {!isRecording && !audioURL && (
@@ -146,9 +162,15 @@ export default function AudioRecorder({ onRecordingComplete }) {
       )}
       {audioURL && !isRecording && (
         <div className="d-flex flex-column align-items-center gap-3">
-          <audio ref={audioRef} src={audioURL} onPlay={visualize} controls />
+          {/* We hide the default controls and use our own button */}
+          <audio ref={audioRef} src={audioURL} onEnded={() => audioRef.current.currentTime = 0} />
           <canvas ref={canvasRef} width="300" height="70" />
-          <Button variant="outline-light" size="sm" onClick={startRecording}>Record Again</Button>
+          
+          {/* FIX: Custom play/pause button instead of the default audio controls */}
+          <div className="d-flex align-items-center gap-3">
+            <Button variant="success" onClick={handlePreviewPlayPause}>Play Preview</Button>
+            <Button variant="outline-light" size="sm" onClick={startRecording}>Record Again</Button>
+          </div>
         </div>
       )}
     </div>

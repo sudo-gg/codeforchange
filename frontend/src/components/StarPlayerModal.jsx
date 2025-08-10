@@ -156,9 +156,18 @@ export default function StarPlayerModal({ star, show, onHide, onStarAppreciated 
 
     const handlePlayPause = () => {
         if (!audioRef.current) return;
+
+        // FIX: Setup the visualizer FIRST, before playing.
+        // This ensures the AudioContext is created inside the user's click event.
+        if (!audioContextRef.current) {
+            setupAudioVisualizer();
+        }
+
+        // Now, toggle play/pause
         if (audioRef.current.paused) {
+            // We also explicitly resume the context, which is a best practice for Safari.
+            audioContextRef.current?.audioContext.resume();
             audioRef.current.play();
-            if (!audioContextRef.current) setupAudioVisualizer();
         } else {
             audioRef.current.pause();
         }
