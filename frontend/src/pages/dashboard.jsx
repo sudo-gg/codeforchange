@@ -1,23 +1,22 @@
-import { useEffect, useState, useRef } from 'react';
-import { supabase } from '../supabaseClient';
-
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "../supabaseClient";
 
 // Star component for animated background
 const Star = ({ x, y, size, opacity, animationDelay }) => (
   <div
     style={{
-      position: 'fixed',
+      position: "fixed",
       left: `${x}vw`,
       top: `${y}vh`,
       width: `${size}px`,
       height: `${size}px`,
-      backgroundColor: 'white',
-      borderRadius: '50%',
+      backgroundColor: "white",
+      borderRadius: "50%",
       opacity: opacity,
       animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
       animationDelay: `${animationDelay}s`,
       zIndex: 1,
-      pointerEvents: 'none'
+      pointerEvents: "none",
     }}
   />
 );
@@ -26,27 +25,27 @@ const Star = ({ x, y, size, opacity, animationDelay }) => (
 const ShootingStar = ({ delay }) => (
   <div
     style={{
-      position: 'fixed',
-      left: '100vw',
+      position: "fixed",
+      left: "100vw",
       top: `${Math.random() * 100}vh`,
-      width: '4px',
-      height: '4px',
-      backgroundColor: 'white',
-      borderRadius: '50%',
+      width: "4px",
+      height: "4px",
+      backgroundColor: "white",
+      borderRadius: "50%",
       opacity: 0.7,
       animation: `shootingStar 3s linear infinite`,
       animationDelay: `${delay}s`,
       zIndex: 1,
-      pointerEvents: 'none'
+      pointerEvents: "none",
     }}
   >
-    <div 
+    <div
       style={{
-        position: 'absolute',
-        width: '80px',
-        height: '2px',
-        background: 'linear-gradient(to right, white, transparent)',
-        transform: 'translateY(-1px)',
+        position: "absolute",
+        width: "80px",
+        height: "2px",
+        background: "linear-gradient(to right, white, transparent)",
+        transform: "translateY(-1px)",
       }}
     />
   </div>
@@ -85,34 +84,37 @@ export default function Dashboard() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error) {
-        console.error(error)
-        return
+        console.error(error);
+        return;
       }
       setUser_id(user?.id);
-      
+
       //setUser_id('demo-user-123');
-    }
-    getUser()
-  }, [])
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     if (user_id !== null) {
       // Simulate fetching user data
       const fetchUserData = async () => {
         const { data, error } = await supabase
-                    .from('users')
-                    .select('username, karma_score')
-                    .eq('id', user_id);
-    
-                if (error) {
-                    setError(error.message);
-                    console.error('Error fetching user data:', error);
-                } else {
-                    setUser(data);
-                    // user contains username and karma_score
-                }
+          .from("users")
+          .select("username, karma_score")
+          .eq("id", user_id);
+
+        if (error) {
+          setError(error.message);
+          console.error("Error fetching user data:", error);
+        } else {
+          setUser(data);
+          // user contains username and karma_score
+        }
         // Demo data
         //setUser([{ username: 'StarGazer', karma_score: 1250 }]);
       };
@@ -138,14 +140,14 @@ export default function Dashboard() {
         //   }
         // ];
         // setStars(demoStars);
-        
+
         const { data, error } = await supabase
-          .from('stars')
-          .select('created_at, karma, audio_url')
-          .eq('user_id', user_id);
+          .from("stars")
+          .select("created_at, karma, audio_url")
+          .eq("user_id", user_id);
         if (error) {
           setError(error.message);
-          console.error('Error fetching stars:', error);
+          console.error("Error fetching stars:", error);
         } else {
           setStars(data);
         }
@@ -166,115 +168,133 @@ export default function Dashboard() {
     const startingDayOfWeek = firstDay.getDay();
 
     const days = [];
-    
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const currentDate = new Date(year, month, day);
-      const hasAudio = stars.some(star => {
+      const hasAudio = stars.some((star) => {
         // Handle timestamptz format from PostgreSQL
         const starDate = new Date(star.created_at);
         return starDate.toDateString() === currentDate.toDateString();
       });
-      
+
       days.push({
         day,
         date: currentDate,
         hasAudio,
-        audioData: hasAudio ? stars.find(star => 
-          new Date(star.created_at).toDateString() === currentDate.toDateString()
-        ) : null
+        audioData: hasAudio
+          ? stars.find(
+              (star) =>
+                new Date(star.created_at).toDateString() ===
+                currentDate.toDateString()
+            )
+          : null,
       });
     }
-    
+
     // Add empty cells to complete the grid (42 cells total for 6 weeks)
     const totalCells = 42;
     const remainingCells = totalCells - days.length;
     for (let i = 0; i < remainingCells; i++) {
       days.push(null);
     }
-    
+
     return days;
   };
 
   const handleDateClick = (dayData) => {
-  if (dayData && dayData.hasAudio) {
-    const newAudioUrl = dayData.audioData.audio_url;
-    const currentAudioUrl = audioRef.current?.src;
-    
-    // Only update src if it's a different audio file
-    if (currentAudioUrl !== newAudioUrl) {
-      audioRef.current.src = newAudioUrl;
-      setSelectedDate(dayData.date);
-      audioRef.current.play();
-      setPlayingAudio(dayData.audioData);
-    } else {
-      // Same audio file
-      setSelectedDate(dayData.date);
-      if (audioRef.current.paused) {
+    if (dayData && dayData.hasAudio) {
+      const newAudioUrl = dayData.audioData.audio_url;
+      const currentAudioUrl = audioRef.current?.src;
+
+      // Only update src if it's a different audio file
+      if (currentAudioUrl !== newAudioUrl) {
+        audioRef.current.src = newAudioUrl;
+        setSelectedDate(dayData.date);
         audioRef.current.play();
         setPlayingAudio(dayData.audioData);
       } else {
-        audioRef.current.pause();
-        setPlayingAudio(null);
+        // Same audio file
+        setSelectedDate(dayData.date);
+        if (audioRef.current.paused) {
+          audioRef.current.play();
+          setPlayingAudio(dayData.audioData);
+        } else {
+          audioRef.current.pause();
+          setPlayingAudio(null);
+        }
       }
+      audioRef.current.onended = () => {
+        setPlayingAudio(null);
+      };
     }
-    audioRef.current.onended = () => {
-      setPlayingAudio(null);
-    };
-  }
-};
+  };
 
   const navigateMonth = (direction) => {
-    setCurrentMonth(prev => {
+    setCurrentMonth((prev) => {
       const newMonth = new Date(prev);
       newMonth.setMonth(prev.getMonth() + direction);
       return newMonth;
     });
   };
-const deleteAudio = async (audioUrl) => {
-  console.log("Deleting audio file:", audioUrl);
-  const filePath = audioUrl.replace(
-  `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/audio-notes/`,
-  ''
-);
-console.log("user_id", user_id,audioUrl);
-  const { error: deleteError } = await supabase
-  .storage
-  .from('audio-notes')
-  .remove([filePath]);
+  const deleteAudio = async (audioUrl) => {
+    console.log("Deleting audio file:", audioUrl);
+    const filePath = audioUrl.replace(
+      `${
+        import.meta.env.VITE_SUPABASE_URL
+      }/storage/v1/object/public/audio-notes/`,
+      ""
+    );
+    console.log("user_id", user_id, audioUrl);
+    const { error: deleteError } = await supabase.storage
+      .from("audio-notes")
+      .remove([filePath]);
 
-  if (deleteError) {
-  console.error("Error deleting audio file:", deleteError);
-  } else {
-  const { error } = await supabase
-  .from('stars')
-  .delete()
-  .eq('user_id', user_id)
-  .eq('audio_url', audioUrl);
+    if (deleteError) {
+      console.error("Error deleting audio file:", deleteError);
+    } else {
+      const { error } = await supabase
+        .from("stars")
+        .delete()
+        .eq("user_id", user_id)
+        .eq("audio_url", audioUrl);
 
-  if (error) {
-  console.error("Error deleting star:", error);
-  }
-  }
-  console.log("Audio file deleted successfully allegedly");
-  audioRef.current.pause()
-  setSelectedDate(null);
-  setStars(stars.filter(star => star.audio_url !== audioUrl));
-  //console.log("Audio file deleted successfully",playingAudio);
-};
+      if (error) {
+        console.error("Error deleting star:", error);
+      }
+    }
+    console.log("Audio file deleted successfully allegedly");
+    audioRef.current.pause();
+    setSelectedDate(null);
+    setStars(stars.filter((star) => star.audio_url !== audioUrl));
+    //console.log("Audio file deleted successfully",playingAudio);
+  };
   const days = getDaysInMonth(currentMonth);
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"];
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <>
-    <style>{`
+      <style>
+        {`
     @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css');
 
 @keyframes twinkle {
@@ -389,32 +409,46 @@ console.log("user_id", user_id,audioUrl);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}` }
-
-    </style>
+}`}
+      </style>
       <div className="galaxy-bg">
         {/* Animated star field */}
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 1, pointerEvents: 'none' }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        >
           {backgroundStars.map((star) => (
             <Star key={star.id} {...star} />
           ))}
         </div>
-        
+
         {/* Shooting stars */}
         <ShootingStar delay={10} />
         <ShootingStar delay={40} />
         <ShootingStar delay={16} />
-        
+
         {/* Nebula effects */}
         <div className="nebula-1"></div>
         <div className="nebula-2"></div>
-        
-        <div className="container-fluid py-4 position-relative" style={{ zIndex: 10 }}>
+
+        <div
+          className="container-fluid py-4 position-relative"
+          style={{ zIndex: 10 }}
+        >
           {/* Dashboard Header */}
           <div className="row mb-4">
             <div className="col-12">
               <div className="glass-morphism rounded-3 p-4">
-                <h1 className="display-4 text-white text-glow mb-0">Dashboard</h1>
+                <h1 className="display-4 text-white text-glow mb-0">
+                  Dashboard
+                </h1>
                 {error && (
                   <div className="alert alert-danger mt-3" role="alert">
                     Error: {error}
@@ -423,33 +457,33 @@ console.log("user_id", user_id,audioUrl);
               </div>
             </div>
           </div>
-          
+
           <div className="row">
             {/* User Info Section */}
             <div className="col-lg-4 mb-4">
               <div className="glass-morphism rounded-3 p-4 h-100">
                 <div className="text-center mb-4">
-                  <div 
+                  <div
                     className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                     style={{
-                      width: '80px',
-                      height: '80px',
-                      background: 'linear-gradient(45deg, #3b82f6, #6366f1)',
-                      boxShadow: '0 0 20px rgba(59, 130, 246, 0.4)'
+                      width: "80px",
+                      height: "80px",
+                      background: "linear-gradient(45deg, #3b82f6, #6366f1)",
+                      boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)",
                     }}
                   >
                     <i className="fas fa-user text-white fs-2"></i>
                   </div>
                   <h2 className="text-white mb-2">
-                    Welcome, {user ? user[0].username : '...'}
+                    Welcome, {user ? user[0].username : "..."}
                   </h2>
                   <p className="text-light mb-0">
                     <span className="badge bg-primary fs-6">
-                      ⭐ Karma: {user ? user[0].karma_score : '...'}
+                      ⭐ Karma: {user ? user[0].karma_score : "..."}
                     </span>
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <p className="text-light small mb-0">
                     Total Voice Notes: {stars.length}
@@ -457,7 +491,7 @@ console.log("user_id", user_id,audioUrl);
                 </div>
               </div>
             </div>
-            
+
             {/* Calendar Section */}
             <div className="col-lg-8">
               <div className="glass-morphism rounded-3 p-4">
@@ -467,16 +501,17 @@ console.log("user_id", user_id,audioUrl);
                     Your Audio Journey
                   </h2>
                   <div className="d-flex align-items-center gap-2">
-                    <button 
+                    <button
                       className="btn btn-outline-light btn-sm"
                       onClick={() => navigateMonth(-1)}
                     >
                       <i className="fas fa-chevron-left"></i>
                     </button>
                     <h4 className="text-white mb-0 mx-3">
-                      {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                      {monthNames[currentMonth.getMonth()]}{" "}
+                      {currentMonth.getFullYear()}
                     </h4>
-                    <button 
+                    <button
                       className="btn btn-outline-light btn-sm"
                       onClick={() => navigateMonth(1)}
                     >
@@ -484,12 +519,12 @@ console.log("user_id", user_id,audioUrl);
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Calendar */}
                 <div className="calendar-container">
                   {/* Day headers */}
                   <div className="row g-1 mb-2">
-                    {dayNames.map(dayName => (
+                    {dayNames.map((dayName) => (
                       <div key={dayName} className="col">
                         <div className="text-center text-light small fw-bold py-2">
                           {dayName}
@@ -497,23 +532,33 @@ console.log("user_id", user_id,audioUrl);
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Calendar grid - 6 rows for full month display */}
-                  {[0, 1, 2, 3, 4, 5].map(weekIndex => (
+                  {[0, 1, 2, 3, 4, 5].map((weekIndex) => (
                     <div key={weekIndex} className="row g-1 mb-1">
-                      {[0, 1, 2, 3, 4, 5, 6].map(dayIndex => {
+                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
                         const dayData = days[weekIndex * 7 + dayIndex];
                         return (
-                          <div key={dayIndex} className="col" style={{ maxWidth: '14.28%', flex: '0 0 14.28%' }}>
-                            <div 
+                          <div
+                            key={dayIndex}
+                            className="col"
+                            style={{ maxWidth: "14.28%", flex: "0 0 14.28%" }}
+                          >
+                            <div
                               className={`calendar-day d-flex align-items-center justify-content-center text-white rounded ${
-                                dayData?.hasAudio ? 'has-audio' : ''
+                                dayData?.hasAudio ? "has-audio" : ""
                               } ${
-                                playingAudio && dayData?.audioData === playingAudio ? 'playing-audio' : ''
-                              } ${
-                                !dayData ? 'invisible' : ''
-                              }`}
-                              style={{ minHeight: '60px', cursor: dayData?.hasAudio ? 'pointer' : 'default' }}
+                                playingAudio &&
+                                dayData?.audioData === playingAudio
+                                  ? "playing-audio"
+                                  : ""
+                              } ${!dayData ? "invisible" : ""}`}
+                              style={{
+                                minHeight: "60px",
+                                cursor: dayData?.hasAudio
+                                  ? "pointer"
+                                  : "default",
+                              }}
                               onClick={() => handleDateClick(dayData)}
                             >
                               {dayData?.day}
@@ -524,20 +569,19 @@ console.log("user_id", user_id,audioUrl);
                     </div>
                   ))}
                 </div>
-                
-                
+
                 {/* Legend */}
                 <div className="mt-4 pt-3 border-top border-secondary">
                   <div className="row text-center">
                     <div className="col-md-4">
                       <div className="d-flex align-items-center justify-content-center text-light small">
-                        <div 
+                        <div
                           className="rounded me-2"
-                          style={{ 
-                            width: '12px', 
-                            height: '12px', 
-                            background: 'rgba(59, 130, 246, 0.3)',
-                            border: '1px solid rgba(59, 130, 246, 0.6)'
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            background: "rgba(59, 130, 246, 0.3)",
+                            border: "1px solid rgba(59, 130, 246, 0.6)",
                           }}
                         ></div>
                         Has Voice Note
@@ -545,13 +589,13 @@ console.log("user_id", user_id,audioUrl);
                     </div>
                     <div className="col-md-4">
                       <div className="d-flex align-items-center justify-content-center text-light small">
-                        <div 
+                        <div
                           className="rounded me-2"
-                          style={{ 
-                            width: '12px', 
-                            height: '12px', 
-                            background: 'rgba(34, 197, 94, 0.4)',
-                            border: '1px solid rgba(34, 197, 94, 0.7)'
+                          style={{
+                            width: "12px",
+                            height: "12px",
+                            background: "rgba(34, 197, 94, 0.4)",
+                            border: "1px solid rgba(34, 197, 94, 0.7)",
                           }}
                         ></div>
                         Currently Playing
@@ -567,7 +611,7 @@ console.log("user_id", user_id,audioUrl);
               </div>
             </div>
           </div>
-          
+
           {/* Audio Player Section */}
           {selectedDate && (
             <div className="row mt-4">
@@ -580,11 +624,13 @@ console.log("user_id", user_id,audioUrl);
                         Voice Note from {selectedDate.toLocaleDateString()}
                       </h5>
                       <p className="text-light small mb-0">
-                        {playingAudio ? 'Now playing...' : 'Click to play your memory'}
+                        {playingAudio
+                          ? "Now playing..."
+                          : "Click to play your memory"}
                       </p>
                     </div>
                     <div className="d-flex gap-2">
-                      <button 
+                      <button
                         className="btn btn-galaxy btn-sm"
                         onClick={() => {
                           if (audioRef.current) {
@@ -599,13 +645,14 @@ console.log("user_id", user_id,audioUrl);
                         <i className="fas fa-play me-1"></i>
                         Play
                       </button>
-                      <button className="btn btn-outline-light btn-sm">
+                      {/* <button className="btn btn-outline-light btn-sm">
                         <i className="fas fa-download"></i>
-                      </button>
-                      <button className="btn btn-outline-danger btn-sm" onClick={() => deleteAudio(audioRef.current?.src)}>
-                        <i className="fas fa-trash">
-                          Delete voice note
-                        </i>
+                      </button> */}
+                      <button
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => deleteAudio(audioRef.current?.src)}
+                      >
+                        <i className="fas fa-trash">Delete voice note</i>
                       </button>
                     </div>
                   </div>
@@ -613,7 +660,7 @@ console.log("user_id", user_id,audioUrl);
               </div>
             </div>
           )}
-          <audio ref={audioRef} controls style={{ display: 'none' }} />
+          <audio ref={audioRef} controls style={{ display: "none" }} />
         </div>
       </div>
     </>
