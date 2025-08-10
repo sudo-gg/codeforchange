@@ -65,8 +65,8 @@ export default function AudioRecorder({ onRecordingComplete }) {
         const url = URL.createObjectURL(audioBlob);
         setAudioURL(url);
         setIsRecording(false);
-        // 5. Pass the raw audio data (the blob) to the parent component
-        onRecordingComplete(audioBlob);
+        // 5. Pass the raw audio data (the blob and mimeType) to the parent component
+        onRecordingComplete({ blob: audioBlob, mimeType: mimeType });
       };
 
       // 6. Start recording

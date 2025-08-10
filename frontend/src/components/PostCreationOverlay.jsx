@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Spinner, Alert } from 'react-bootstrap';
 import { supabase } from '../supabaseClient';
-import { CheckCircleFill } from 'react-bootstrap-icons'; // Import the checkmark icon
+import { CheckCircleFill } from 'react-bootstrap-icons';
 import AudioRecorder from './AudioRecorder';
 
 export default function PostCreationOverlay({ user, onPostSuccess }) {
     const [step, setStep] = useState('recording');
-    const [audioBlob, setAudioBlob] = useState(null);
+    const [audioData, setAudioData] = useState(null); // Correct state variable
     const [tag, setTag] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [processingStarId, setProcessingStarId] = useState(null);
 
-    const handleRecordingComplete = (blob) => {
-        setAudioBlob(blob);
+    // FIX #1: This function now correctly sets the audioData state.
+    const handleRecordingComplete = (data) => {
+        setAudioData(data);
     };
 
     // This effect listens for the final result from the backend
@@ -34,7 +35,6 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
                     const updatedStar = payload.new;
 
                     if (updatedStar.status === 'approved') {
-                        // CHANGE #1: Instead of redirecting, go to the 'approved' step.
                         setStep('approved');
                     } else if (updatedStar.status === 'rejected') {
                         if (updatedStar.rejection_reason === 'low_confidence') {
@@ -53,22 +53,22 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [processingStarId]);
+    }, [processingStarId, onPostSuccess]);
 
-    // CHANGE #2: This new effect handles the 2-second success animation before redirecting.
+    // This new effect handles the 2-second success animation before redirecting.
     useEffect(() => {
         if (step === 'approved') {
             const timer = setTimeout(() => {
                 onPostSuccess();
             }, 2000); // Wait 2 seconds
 
-            // Cleanup the timer if the component unmounts
             return () => clearTimeout(timer);
         }
     }, [step, onPostSuccess]);
     
     const handleSubmit = async () => {
-        if (!tag || !audioBlob) { 
+        // FIX #2: Checks for the correct 'audioData' variable.
+        if (!tag || !audioData) { 
             setError("Please record a message and select a tag."); 
             return; 
         }
@@ -89,10 +89,13 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
             setProcessingStarId(newStar.id);
             setStep('processing');
 
-            const fileName = `${newStar.id}/audio.webm`;
+            // FIX #3: The file path now correctly uses the star's ID, not the user's ID.
+            const extension = audioData.mimeType.startsWith('audio/mp4') ? 'mp4' : 'webm';
+            const fileName = `${newStar.id}/audio.${extension}`;
+
             const { error: uploadError } = await supabase.storage
                 .from('audio-notes')
-                .upload(fileName, audioBlob);
+                .upload(fileName, audioData.blob); 
             
             if (uploadError) {
                 await supabase.from('stars').delete().eq('id', newStar.id);
@@ -117,7 +120,6 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
     };
 
     const renderStepContent = () => {
-        // I've converted your if/return to a switch statement to cleanly handle the new 'approved' state.
         switch (step) {
             case 'processing':
                 return (
@@ -127,7 +129,6 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
                     </div>
                 );
             
-            // CHANGE #3: A new UI state for the success animation.
             case 'approved':
                 return (
                     <div className="text-center p-5">
@@ -162,7 +163,8 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
                                 variant="primary" 
                                 size="lg" 
                                 onClick={handleSubmit} 
-                                disabled={!audioBlob || !tag || isSubmitting}
+                                // FIX #2 (again): Checks for the correct 'audioData' variable.
+                                disabled={!audioData || !tag || isSubmitting}
                             >
                                 {isSubmitting ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : 'Send to the Sky'}
                             </Button>
