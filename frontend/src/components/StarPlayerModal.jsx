@@ -70,10 +70,10 @@ export default function StarPlayerModal({ star, show, onHide, onStarAppreciated 
     }, [star?.id, show]);
 
 
-    // Optimistic UI update: change UI first, then call the database.
     const handleAppreciate = async () => {
         if (!star || isLoading || isOwnStar) return;
 
+        // Check for user session.
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
             alert("You must be logged in to appreciate a star.");
@@ -84,30 +84,29 @@ export default function StarPlayerModal({ star, show, onHide, onStarAppreciated 
         const previouslyAppreciated = isAppreciated;
         setIsAppreciated(!previouslyAppreciated);
 
-        // 2. Perform the database action in the background
+        // 2. Determine which RPC function to call.
+        const functionToCall = previouslyAppreciated ? 'unappreciate_star' : 'appreciate_star';
+        const params = previouslyAppreciated 
+            ? { star_id_to_remove: star.id } 
+            : { star_id_to_add: star.id };
+
+        // 3. Perform the database action in the background by calling the function.
         try {
-            if (previouslyAppreciated) {
-                // UN-APPRECIATE
-                const { error } = await supabase
-                    .from('appreciations')
-                    .delete()
-                    .match({ star_id: star.id, user_id: user.id });
-                if (error) throw error;
-            } else {
-                // APPRECIATE
-                const { error } = await supabase
-                    .from('appreciations')
-                    .insert({ star_id: star.id, user_id: user.id });
-                if (error) throw error;
+            const { error } = await supabase.rpc(functionToCall, params);
+
+            if (error) {
+                // If the database call fails, throw an error to be caught below.
+                throw error;
             }
             
-            // 3. Notify the parent to update counts, WITHOUT a full refresh.
+            // 4. Notify the parent to update UI counts, WITHOUT a full refresh.
             if (onStarAppreciated) {
                 onStarAppreciated({ appreciated: !previouslyAppreciated });
             }
 
         } catch (error) {
-            console.error("Error updating appreciation:", error);
+            console.error(`Error with RPC call ${functionToCall}:`, error);
+            
             // If the database fails, revert the UI back to its original state.
             setIsAppreciated(previouslyAppreciated);
             alert("Could not update appreciation. Please try again.");
