@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
+
 
 // Star component for animated background
 const Star = ({ x, y, size, opacity, animationDelay }) => (
@@ -236,10 +237,16 @@ export default function Dashboard() {
     });
   };
 const deleteAudio = async (audioUrl) => {
+  console.log("Deleting audio file:", audioUrl);
+  const filePath = audioUrl.replace(
+  `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/audio-notes/`,
+  ''
+);
+console.log("user_id", user_id,audioUrl);
   const { error: deleteError } = await supabase
   .storage
   .from('audio-notes')
-  .remove([audioUrl]);
+  .remove([filePath]);
 
   if (deleteError) {
   console.error("Error deleting audio file:", deleteError);
@@ -247,7 +254,8 @@ const deleteAudio = async (audioUrl) => {
   const { error } = await supabase
   .from('stars')
   .delete()
-  .eq('user_id', user_id);
+  .eq('user_id', user_id)
+  .eq('audio_url', audioUrl);
 
   if (error) {
   console.error("Error deleting star:", error);
@@ -256,7 +264,6 @@ const deleteAudio = async (audioUrl) => {
   console.log("Audio file deleted successfully allegedly");
   audioRef.current.pause()
   setSelectedDate(null);
-  setPlayingAudio(null);
   setStars(stars.filter(star => star.audio_url !== audioUrl));
   //console.log("Audio file deleted successfully",playingAudio);
 };
