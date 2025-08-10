@@ -114,13 +114,11 @@ export default function Dashboard() {
 
   const clickedpfp = '../../images.jpeg';
   const soundSrc = '../../vine-boom.mp3';
-  const [isClicked, setIsClicked] = useState(false);
   const [opacity, setOpacity] = useState(0);
 
   const audioRef = useRef(null);
 
   const handlepfpClick = () => {
-    setIsClicked(true);
     const audio = new Audio(soundSrc);
     audio.play();
   };
@@ -557,7 +555,6 @@ export default function Dashboard() {
                     className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
                     
                     onClick={() => {
-                      setIsClicked(true);
                       handlepfpClick();
                     }}
                     onMouseEnter={() => setOpacity(1)}
@@ -574,8 +571,7 @@ export default function Dashboard() {
                     <img
                       src={clickedpfp}
                       alt="Profile"
-                      className={`rounded-circle border border-4 border-white ${isClicked ? "clicked" : ""
-                        }`}
+                      className={`rounded-circle border border-4 border-white`}
                       style={{
                         width: "80px",
                         height: "80px",

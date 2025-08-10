@@ -10,6 +10,8 @@ import LoginPage from './pages/login';
 import SignUpPage from './pages/signup';
 import NightSkyPage from './pages/NightSkyPage';
 import DashboardPage from './pages/dashboard'; // Assuming you'll create this - yes :)
+import BlogPage from './pages/BlogPage';
+import { Placeholder } from 'react-bootstrap';
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -39,7 +41,13 @@ export default function App() {
         <Route path="/" element={!session ? <LandingPage /> : <Navigate to="/sky" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<SignUpPage />} />
-
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/privacy" 
+        element={<><h1 style={{color: "white"}}>Privacy Policy</h1>
+        <p style={{color: "white"}}>We will try not to steal your data 😔</p>
+        <img src='../../images.jpeg'></img></>}/>
+        <Route path="/blog/terms" element={<img src='../../images.jpeg'></img>} />
+        <Route path="/blog/contact" element={<img src='../../images.jpeg'></img>} />
         {/* Protected routes that only logged-in users can see */}
         <Route element={session ? <Layout /> : <Navigate to="/login" />}>
           {/* Pass the session object as a prop */}

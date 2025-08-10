@@ -20,13 +20,11 @@ export default function LandingPage() {
   const [stars, setStars] = useState([]);
     const clickedpfp = '../../images.jpeg';
     const soundSrc = '../../vine-boom.mp3';
-    const [isClicked, setIsClicked] = useState(false);
     const [opacity, setOpacity] = useState(0);
   
     const audioRef = useRef(null);
   
     const handlepfpClick = () => {
-      setIsClicked(true);
       const audio = new Audio(soundSrc);
       audio.play();
     };
@@ -44,7 +42,7 @@ export default function LandingPage() {
     }, []);
   return (
     <>
-    <div className="position-absolute top-0 start-0 w-100 h-100">
+    <div className="position-absolute top-0 start-0 w-100 h-100" style={{ pointerEvents: 'none' }}>
           {stars.map((star) => (
             <Star key={star.id} {...star} />
           ))}
@@ -61,12 +59,25 @@ export default function LandingPage() {
               borderRadius: 8
             }} 
             onClick={() => {
-              setIsClicked(true);
               handlepfpClick();
             }}
             onMouseEnter={() => setOpacity(1)}
             onMouseLeave={() => setOpacity(0)}>
-              <img src={clickedpfp} alt="Profile" className="img-fluid rounded-circle" style={{ width: '100%', height: '100%' }} opacity={opacity}/>
+              <img
+                      src={clickedpfp}
+                      alt="Profile"
+                      className={`w-100 h-100 border border-4 border-white`}
+                      style={{
+                        width: 32,
+                        height: 32,
+                        objectFit: "cover",
+                        opacity: opacity,
+                        transition: "opacity 0.3s ease",
+                        borderRadius: 8,
+                        position: "relative",
+                        top: "-1px"
+                      }}
+                    />
             </div>
             <span className="fw-bold fs-4">Elevate</span>
           </Link>
@@ -76,12 +87,12 @@ export default function LandingPage() {
           </button>
           <div className="collapse navbar-collapse" id="mainNav">
             <ul className="navbar-nav ms-auto mb-2 mb-md-0">
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link className="nav-link" to="/how-it-works">How It Works</Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/features">Features</Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link className="nav-link" to="/blog">Blog</Link>
               </li>
