@@ -591,7 +591,7 @@ export default function Dashboard() {
                   </h2>
                   <p className="text-light mb-0">
                     <span className="badge bg-primary fs-6">
-                      ⭐ Karma: {user ? user[0].karma_score : "..."}
+                       Karma: {user ? user[0].karma_score : "..."}
                     </span>
                   </p>
                 </div>

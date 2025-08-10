@@ -195,7 +195,7 @@ export default function Signup() {
         >
           <Card.Body>
             <div className="text-center mb-4">
-              <div
+              {/* <div
                 className="mx-auto mb-3 d-flex align-items-center justify-content-center"
                 style={{
                   width: 64,
@@ -215,7 +215,7 @@ export default function Signup() {
                 >
                   <path d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5z" />
                 </svg>
-              </div>
+              </div> */}
               <h2 className="fw-bold">Begin Your Journey</h2>
               <p className="text-white-50">
                 Create your account for wellness among the stars

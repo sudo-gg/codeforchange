@@ -1,7 +1,42 @@
 import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+
+const Star = ({ x, y, size, opacity, animationDelay }) => (
+  <div
+    className="position-absolute rounded-circle bg-white"
+    style={{
+      left: `${x}%`,
+      top: `${y}%`,
+      width: `${size}px`,
+      height: `${size}px`,
+      opacity: opacity,
+      animation: `pulse ${2 + Math.random() * 3}s infinite`,
+      animationDelay: `${animationDelay}s`,
+    }}
+  />
+);
 
 export default function LandingPage() {
+  const [stars, setStars] = useState([]);
+    
+  useEffect(() => {
+      const newStars = Array.from({ length: 150 }).map((_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+        opacity: Math.random() * 0.7 + 0.1,
+        animationDelay: Math.random() * 5,
+      }));
+      setStars(newStars);
+    }, []);
   return (
+    <>
+    <div className="position-absolute top-0 start-0 w-100 h-100">
+          {stars.map((star) => (
+            <Star key={star.id} {...star} />
+          ))}
+        </div>
     <div className="bg-dark min-vh-100 d-flex flex-column">
       {/* Navbar */}
       <nav className="navbar navbar-expand-md navbar-dark bg-dark border-bottom border-secondary px-4">
@@ -14,6 +49,7 @@ export default function LandingPage() {
             }}></div>
             <span className="fw-bold fs-4">Elevate</span>
           </Link>
+          
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -44,17 +80,17 @@ export default function LandingPage() {
           </span>
         </div>
         <h1 className="display-3 fw-bold text-light mb-4" style={{ textShadow: '0 2px 16px #0008' }}>
-          Revitalise your productivity. <br className="d-none d-sm-block" />
+          Welcome to Elevate! <br className="d-none d-sm-block" />
           <span style={{
             background: 'linear-gradient(90deg, #a78bfa, #2563eb)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            Achieve new heights.
+            A galaxy of help.
           </span>
         </h1>
         <p className="lead text-secondary mb-5 mx-auto" style={{ maxWidth: 600 }}>
-          Track your tasks, manage your time, and boost your productivity with our intuitive platform.
+          Explore a whole universe of peoples thoughts who can offer words of wisdom.
         </p>
         <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center mb-5">
           <Link to="/register" className="btn btn-primary btn-lg px-5">Get Started — Free</Link>
@@ -65,5 +101,6 @@ export default function LandingPage() {
         </div>
       </main>
     </div>
+    </>
   );
 }

@@ -221,9 +221,9 @@ const NightSkyCanvas = ({ stars = [], onStarClick }) => {
             <GalaxyNavigator galaxies={galaxies} onGalaxyClick={navigateToGalaxy} currentGalaxy={currentGalaxy} />
             <div className="position-fixed bottom-0 end-0 m-3" style={{ zIndex: 1000 }}>
                 <div className="glass-card p-2 rounded text-white" style={{ background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(10px)', fontSize: '0.8rem', maxWidth: '200px' }}>
-                    <div>🖱️ Drag to pan</div>
-                    <div>🔍 Scroll to zoom</div>
-                    <div>⭐ Click stars to listen</div>
+                    <div>Drag to pan</div>
+                    <div>Scroll to zoom</div>
+                    <div>Click stars to listen</div>
                 </div>
             </div>
         </div>
