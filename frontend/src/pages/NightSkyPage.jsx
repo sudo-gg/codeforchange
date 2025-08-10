@@ -25,11 +25,12 @@ export default function NightSkyPage({ session }) {
         setLoading(true);
         const { user } = session;
 
-        // Fetch all stars that are approved OR belong to the current user
+        // --- THIS IS THE CORRECTED QUERY ---
+        // It now only fetches stars that are explicitly 'approved'.
         const { data, error } = await supabase
             .from('stars')
             .select(`*, users!user_id(username)`)
-            .or(`status.eq.approved,user_id.eq.${user.id}`);
+            .eq('status', 'approved');
 
         if (error) {
             console.error("Error fetching stars:", error);
@@ -39,7 +40,7 @@ export default function NightSkyPage({ session }) {
 
         const finalStars = data || [];
         
-        // Check if the user has a recent post among the fetched stars
+        // This part correctly checks for the user's own approved posts
         const userPosts = finalStars.filter(star => star.user_id === user.id);
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const hasRecentPost = userPosts.some(post => new Date(post.created_at) > twentyFourHoursAgo);
@@ -48,7 +49,7 @@ export default function NightSkyPage({ session }) {
         setHasPostedToday(hasRecentPost);
         setLoading(false);
 
-    }, [session]);
+    }, [session?.user?.id]);
 
     useEffect(() => {
         fetchAllData();
