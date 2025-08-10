@@ -235,31 +235,30 @@ export default function Dashboard() {
       return newMonth;
     });
   };
-  const deleteAudio = async (audioUrl) => {
-    const filePath = audioUrl.replace(
-  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/audio-notes/`,
-  ''
-);
-
-const { error: deleteError } = await supabase
+const deleteAudio = async (audioUrl) => {
+  const { error: deleteError } = await supabase
   .storage
   .from('audio-notes')
-  .remove([filePath]);
+  .remove([audioUrl]);
 
-if (deleteError) {
+  if (deleteError) {
   console.error("Error deleting audio file:", deleteError);
-} else {
+  } else {
   const { error } = await supabase
   .from('stars')
   .delete()
-  .eq('id', starId) // for safety
   .eq('user_id', user_id);
 
-if (error) {
+  if (error) {
   console.error("Error deleting star:", error);
   }
   }
   console.log("Audio file deleted successfully allegedly");
+  audioRef.current.pause()
+  setSelectedDate(null);
+  setPlayingAudio(null);
+  setStars(stars.filter(star => star.audio_url !== audioUrl));
+  //console.log("Audio file deleted successfully",playingAudio);
 };
   const days = getDaysInMonth(currentMonth);
   const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -519,6 +518,7 @@ if (error) {
                   ))}
                 </div>
                 
+                
                 {/* Legend */}
                 <div className="mt-4 pt-3 border-top border-secondary">
                   <div className="row text-center">
@@ -595,7 +595,7 @@ if (error) {
                       <button className="btn btn-outline-light btn-sm">
                         <i className="fas fa-download"></i>
                       </button>
-                      <button className="btn btn-outline-danger btn-sm" onClick={() => deleteAudio(selectedAudio)}>
+                      <button className="btn btn-outline-danger btn-sm" onClick={() => deleteAudio(audioRef.current?.src)}>
                         <i className="fas fa-trash">
                           Delete voice note
                         </i>
