@@ -123,7 +123,6 @@ export default function Dashboard() {
     setIsClicked(true);
     const audio = new Audio(soundSrc);
     audio.play();
-    setOpacity(1);
   };
 
   // Generate background stars
@@ -531,12 +530,15 @@ export default function Dashboard() {
                       setIsClicked(true);
                       handlepfpClick();
                     }}
+                    onMouseEnter={() => setOpacity(1)}
+                    
                     onMouseLeave={() => setOpacity(0)}
                     style={{
                       width: "80px",
                       height: "80px",
                       background: "linear-gradient(45deg, #3b82f6, #6366f1)",
                       boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)",
+                      cursor: "pointer",
                     }}
                   >
                     <img
