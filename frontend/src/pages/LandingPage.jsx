@@ -126,10 +126,11 @@ export default function LandingPage() {
         </p>
         <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center align-items-center mb-5">
           <Link to="/register" className="btn btn-primary btn-lg px-5">Get Started — Free</Link>
-          <Link to="/how-it-works" className="btn btn-outline-light btn-lg px-5 d-flex align-items-center gap-2">
+          <button className="btn btn-outline-light btn-lg px-5 d-flex align-items-center gap-2"
+  onClick={() => window.open('https://drive.google.com/file/d/1LtIo-LmSpUt1TthO4tNjdxaVLNOVydRM/view?usp=sharing', '_blank')}>
             <svg width="20" height="20" fill="currentColor"><rect width="20" height="20" rx="4" fill="white" /><polygon points="7,5 15,10 7,15" fill="#6366f1" /></svg>
             Watch Video
-          </Link>
+          </button>
         </div>
       </main>
     </div>
