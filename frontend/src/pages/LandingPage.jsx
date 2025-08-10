@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const Star = ({ x, y, size, opacity, animationDelay }) => (
   <div
@@ -18,6 +18,18 @@ const Star = ({ x, y, size, opacity, animationDelay }) => (
 
 export default function LandingPage() {
   const [stars, setStars] = useState([]);
+    const clickedpfp = '../../images.jpeg';
+    const soundSrc = '../../vine-boom.mp3';
+    const [isClicked, setIsClicked] = useState(false);
+    const [opacity, setOpacity] = useState(0);
+  
+    const audioRef = useRef(null);
+  
+    const handlepfpClick = () => {
+      setIsClicked(true);
+      const audio = new Audio(soundSrc);
+      audio.play();
+    };
     
   useEffect(() => {
       const newStars = Array.from({ length: 150 }).map((_, i) => ({
@@ -45,8 +57,17 @@ export default function LandingPage() {
             <div style={{
               width: 32, height: 32,
               background: 'linear-gradient(90deg, #a78bfa, #2563eb)',
+              cursor: "pointer",
               borderRadius: 8
-            }}></div>
+            }} 
+            onClick={() => {
+              setIsClicked(true);
+              handlepfpClick();
+            }}
+            onMouseEnter={() => setOpacity(1)}
+            onMouseLeave={() => setOpacity(0)}>
+              <img src={clickedpfp} alt="Profile" className="img-fluid rounded-circle" style={{ width: '100%', height: '100%' }} opacity={opacity}/>
+            </div>
             <span className="fw-bold fs-4">Elevate</span>
           </Link>
           
