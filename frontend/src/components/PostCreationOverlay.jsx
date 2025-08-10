@@ -152,6 +152,9 @@ export default function PostCreationOverlay({ user, onPostSuccess }) {
                                 <option value="Anxiety">Anxiety</option>
                                 <option value="Burnout">Burnout</option>
                                 <option value="SmallWin">Small Win</option>
+                                <option value="Depression">Depression</option>
+                                <option value="Success">Success</option>
+                                <option value="Stress">Stress</option>
                             </Form.Select>
                         </Form.Group>
 
